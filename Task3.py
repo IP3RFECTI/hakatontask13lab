@@ -4,30 +4,21 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import calendar
-'''
-На это у меня уже нет сил. Часть сделана, но выдает ошибки. 7 утра уже, когда я это пишу. Крч удачи
-'''
+
 print('♦♦♦♦♦♦♦♦♦♦ ДИНАМИКА ПРОДАЖ ПО КЛИЕНТАМ ♦♦♦♦♦♦♦♦♦♦')
 
 # Создаем папку для сохранения графиков
 output_folder = "charts"
 os.makedirs(output_folder, exist_ok=True)
 
-# Загружаем датасеты
-print("💾 Загружаем датасеты...")
-OUTLETS = pd.read_csv('outlets.csv', delimiter=';', dtype=str)
+# Загружаем датасет
+print("💾 Загружаем датасет...")
 SELLOUT = pd.read_csv('SELLOUT_TIME.csv', delimiter=';', dtype=str)
 
 # Приведение типов
 print("🔄 Приведение данных к нужным типам...")
 SELLOUT['sell_date'] = pd.to_datetime(SELLOUT['sell_date'], format='%Y-%m-%d', errors='coerce')
 SELLOUT['cnt'] = pd.to_numeric(SELLOUT['cnt'], errors='coerce').fillna(0).astype(int)
-SELLOUT['outlet_id'] = SELLOUT['outlet_id'].astype(str)
-OUTLETS['outlet_id'] = OUTLETS['outlet_id'].astype(str)
-
-# Объединение данных
-print("🔗 Объединение SELLOUT и OUTLETS...")
-SELLOUT = SELLOUT.merge(OUTLETS, on='outlet_id', how='left')
 SELLOUT['org_name'] = SELLOUT['org_name'].fillna('Неизвестный клиент')
 
 # Группировка продаж по клиентам
@@ -41,6 +32,7 @@ quantiles = client_sales['cnt'].quantile([0.2, 0.8])
 low_threshold, high_threshold = quantiles[0.2], quantiles[0.8]
 
 # Функция категоризации
+
 def categorize_client(sales):
     if sales >= high_threshold:
         return 'Top'
